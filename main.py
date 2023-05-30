@@ -2,20 +2,22 @@
 
 import sys
 
-
+from datetime import datetime
 from PyQt5.QtGui import QPainter, QColor
-from PyQt5.QtCore import QRect, Qt
+from PyQt5.QtCore import QRect, Qt, QSize
 from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QLabel, QVBoxLayout, QHBoxLayout
 
 
 class MainWindow(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
-        self.setGeometry(QRect(50, 50, 300, 300))
+        self.setGeometry(QRect(50, 50, 690, 530))
+        self.setMinimumSize(QSize(640, 480))
         self.setWindowTitle("Погодная станция")
         self.mainBox = QVBoxLayout()
         self.headerBox = QHBoxLayout()
-        self.headerLb = QLabel("Проказания датчиков по состоянию на 20:38 30.05.2023 г.")
+        cur_date_time = datetime.now().strftime("%H:%M   %d.%m.%Y г.")
+        self.headerLb = QLabel("Проказания датчиков по состоянию на  " + cur_date_time)
         self.headerLb.setAlignment(Qt.AlignTop)
         self.headerBox.addWidget(self.headerLb, stretch=0, alignment=Qt.AlignCenter)
         self.drawBox = QHBoxLayout()
