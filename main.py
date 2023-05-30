@@ -2,17 +2,22 @@
 
 import sys
 
-from PyQt5.QtGui import QPainter, QColor, QFont, QPen
-from PyQt5.QtCore import Qt
+
+from PyQt5.QtGui import QPainter, QColor
+from PyQt5.QtCore import QRect, Qt
 from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QLabel, QVBoxLayout, QHBoxLayout
 
 
 class MainWindow(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
-        self.setGeometry(50, 50, 300, 300)
+        self.setGeometry(QRect(50, 50, 300, 300))
         self.setWindowTitle("Погодная станция")
         self.mainBox = QVBoxLayout()
+        self.headerBox = QHBoxLayout()
+        self.headerLb = QLabel("Проказания датчиков по состоянию на 20:38 30.05.2023 г.")
+        self.headerLb.setAlignment(Qt.AlignTop)
+        self.headerBox.addWidget(self.headerLb, stretch=0, alignment=Qt.AlignCenter)
         self.drawBox = QHBoxLayout()
         self.drawView = QWidget()
         self.drawBox.addWidget(self.drawView)
@@ -20,8 +25,10 @@ class MainWindow(QWidget):
         self.btUpdate = QPushButton("Обновить")
         self.btUpdate.clicked.connect(self.drawUpdate)
         self.elem.addWidget(self.btUpdate)
-        self.mainBox.addLayout(self.drawBox)
-        self.mainBox.addLayout(self.elem)
+        self.elem.setAlignment(Qt.AlignRight)
+        self.mainBox.addLayout(self.headerBox, stretch=1)
+        self.mainBox.addLayout(self.drawBox, stretch=100)
+        self.mainBox.addLayout(self.elem, stretch=1)
         self.setLayout(self.mainBox)
 
     def drawUpdate(self):
