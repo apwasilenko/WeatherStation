@@ -4,20 +4,20 @@ from config import host, user, password, database
 
 
 def mysql_py(col):
-    print("Соединение устанавливается")
     try:
-        connection = pymysql.connect(
-            host=host,
-            port=3306,
-            user=user,
-            password=password,
-            database=database,
-            cursorclass = pymysql.cursors.DictCursor,
-        )
-        print("Соединение установлено")
-        print('-' * 20, '#' * 20, '-' * 20)
-
+        print("Соединение устанавливается")
         try:
+            connection = pymysql.connect(
+                host=host,
+                port=3306,
+                user=user,
+                password=password,
+                database=database,
+                cursorclass = pymysql.cursors.DictCursor,
+            )
+            print("Соединение установлено")
+            print('-' * 20, '#' * 20, '-' * 20)
+
             # cursor = connection.cursor()
 
             with connection.cursor() as cursor:
