@@ -13,8 +13,8 @@ class MainWindow(QWidget):
     def __init__(self, parent=None):
         f = mysql_py("4")
         QWidget.__init__(self, parent)
-        self.setGeometry(QRect(50, 50, 690, 530))
-        self.setMinimumSize(QSize(640, 480))
+        self.setGeometry(QRect(50, 50, 320, 240))
+        self.setMinimumSize(QSize(320, 240))
         self.setWindowTitle("Погодная станция")
         self.mainBox = QVBoxLayout()
         self.headerBox = QHBoxLayout()
@@ -50,17 +50,33 @@ class MainWindow(QWidget):
 
 
     def drawWidget(self, qp):
+        min_val = -50
+        max_val = 50
+        cur_cal = 22.5
         poligon = self.drawView.geometry().getRect()
         x1, y1, x2, y2 = poligon[0], poligon[1], poligon[2], poligon[3]  # координаты области рисования
-        qp.setBrush(QColor(255, 255, 255))
-        qp.setPen(QColor(0, 0, 255))
-        qp.drawRect(x1, y1, x2, y2)
-        qp.drawLine(x1, y1, x2 + x1, y2 + y1)
-        for i in range(0, 350):
-            myColor = QColor(i, 0, 0)
-            qp.setPen(QPen(myColor, 70, cap=Qt.FlatCap))
-            qp.drawArc(x1 + 50, x1 + 50, int(x2 / 2), int(x2 / 2), i * 8, (i + 1) * 8)
+        center_x = int((x1 + x2) / 2)  # Центр сектора датчика по горизонтали
+        center_y = int((y1 + y2) / 2)  # Центр сектора датчика по вертикали
+        if center_x > center_y:  # Определяем радиус датчик по наименьшему размеру
+            radius_circle = int(center_y * 0.6)
+        else:
+            radius_circle = int(center_x * 0.6)
+        sec_thick = int(radius_circle / 5)  # Толщина сектора
 
+        # Рисуем шкалу датчика
+        for i in range(0, 255):  # переход света от синего к зеленому
+            myColor = QColor(0, i, 255 - i)
+            qp.setPen(QPen(myColor, sec_thick, cap=Qt.FlatCap))
+            qp.drawArc(center_x - radius_circle, center_y - radius_circle, radius_circle * 2, radius_circle * 2, int(3600 - i * 135 / 255 * 16), int(135 / 255 + 1) * 16)
+        for i in range(0, 255):  # переход света от зеленого к красному
+            myColor = QColor(i, 255 - i, 0)
+            qp.setPen(QPen(myColor, sec_thick, cap=Qt.FlatCap))
+            qp.drawArc(center_x - radius_circle, center_y - radius_circle, radius_circle * 2, radius_circle * 2, int(1440 - i * 135 / 255 * 16), int(135 / 255 + 1) * 16)
+
+        for i in range(0, int((max_val - min_val)/10)+1):  # рисуем метки на шкале
+            myColor = QColor(0, 0, 0)
+            qp.setPen(QPen(myColor, sec_thick * 1.1, cap=Qt.FlatCap))
+            qp.drawArc(center_x - radius_circle, center_y - radius_circle, radius_circle * 2, radius_circle * 2, int(3600 - i * 270 / int((max_val - min_val)/10) * 16), 2 * 16)
 
 def mysql_py(col):
     try:

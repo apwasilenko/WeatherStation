@@ -4,7 +4,7 @@
 from mysql.connector import connect, Error
 
 
-def mysql_py():
+def mysql_py(col):
     print("Соединение устанавливается")
     try:
         with connect(
@@ -15,7 +15,7 @@ def mysql_py():
         ) as connection:
             print(connection)
             print("Соединение уставновлено")
-            select_movies_query = "SELECT * FROM temperatura ORDER BY temperatura.id DESC LIMIT 3"
+            select_movies_query = "SELECT * FROM temperatura ORDER BY temperatura.id DESC LIMIT " + col
             with connection.cursor() as cursor:
                 cursor.execute(select_movies_query)
                 result = cursor.fetchall()
@@ -28,4 +28,4 @@ def mysql_py():
 
 
 if __name__ == '__main__':
-    mysql_py()
+    mysql_py('10')
