@@ -1,30 +1,33 @@
 #!/usr/bin/python3
-
-
-from mysql.connector import connect, Error
+import pymysql
+from config import host, user, password, database
 
 
 def mysql_py(col):
     print("Соединение устанавливается")
     try:
-        with connect(
-                host="141.8.193.236",
-                user="f0659051_apwasilenko",
-                password="apwasilenko",
-                database="f0659051_apwasilenko",
-        ) as connection:
-            print(connection)
-            print("Соединение уставновлено")
-            select_movies_query = "SELECT * FROM temperatura ORDER BY temperatura.id DESC LIMIT " + col
+        connection = pymysql.connect(
+            host=host,
+            port=3306,
+            user=user,
+            password=password,
+            database=database,
+            cursorclass = pymysql.cursors.DictCursor,
+        )
+        print("Соединение установлено")
+        print('-' * 20, '#' * 20, '-' * 20)
+
+        try:
+            # cursor = connection.cursor()
+
             with connection.cursor() as cursor:
-                cursor.execute(select_movies_query)
-                result = cursor.fetchall()
-                print(result)
-                for row in result:
-                    print(row)
-    except Error as e:
-        print(e)
+                selectqyery = ''
+
+        finally:
+            connection.close()
+    except Exception as ex:
         print("Соединение не уставновлено")
+        print(ex)
 
 
 if __name__ == '__main__':
