@@ -18,9 +18,10 @@ class MainWindow(QWidget):
         self.setWindowTitle("Погодная станция")
         self.mainBox = QVBoxLayout()
         self.headerBox = QHBoxLayout()
-        cur_date_time = datetime.now().strftime("%H:%M   %d.%m.%Y г.")
-        print(type(f))
-        hometemp = f[0][2]
+        cur_date_time = f[0]['mydatetime'].strftime("%H:%M   %d.%m.%Y г.")
+        print(type(f[0]))
+        print(f[0]['mydatetime'])
+        hometemp = f[0]['t_home']
 
         self.headerLb = QLabel("Проказания датчиков по состоянию на  " + cur_date_time + "\n" + str(hometemp))
         self.headerLb.setAlignment(Qt.AlignTop)
