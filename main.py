@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 import sys
-
-from mysql.connector import connect, Error
+import pymysql
+from config import host, user, password, database
 from datetime import datetime
 from PyQt5.QtGui import QPainter, QColor, QPen
 from PyQt5.QtCore import QRect, Qt, QSize
@@ -19,7 +19,7 @@ class MainWindow(QWidget):
         self.mainBox = QVBoxLayout()
         self.headerBox = QHBoxLayout()
         cur_date_time = datetime.now().strftime("%H:%M   %d.%m.%Y г.")
-        print(type(f[0][2]))
+        print(type(f))
         hometemp = f[0][2]
 
         self.headerLb = QLabel("Проказания датчиков по состоянию на  " + cur_date_time + "\n" + str(hometemp))
@@ -79,23 +79,39 @@ class MainWindow(QWidget):
             qp.drawArc(center_x - radius_circle, center_y - radius_circle, radius_circle * 2, radius_circle * 2, int(3600 - i * 270 / int((max_val - min_val)/10) * 16), 2 * 16)
 
 def mysql_py(col):
+    resultat = 0
+    print("Соединение устанавливается")
     try:
-        with connect(
-                host="141.8.193.236",
-                user="f0659051_apwasilenko",
-                password="apwasilenko",
-                database="f0659051_apwasilenko",
-        ) as connection:
-            select_movies_query = "SELECT * FROM temperatura ORDER BY temperatura.id DESC LIMIT " + col
+        connection = pymysql.connect(
+            host=host,
+            port=3306,
+            user=user,
+            password=password,
+            database=database,
+            cursorclass=pymysql.cursors.DictCursor,
+        )
+        print("Соединение установлено")
+        print('-' * 20, '#' * 20, '-' * 20)
+
+        try:
+            # cursor = connection.cursor()
+
             with connection.cursor() as cursor:
-                cursor.execute(select_movies_query)
-                result = cursor.fetchall()
-
-            return result
-
-    except Error as e:
-        print(e)
+                selectqyery = "SELECT * FROM temperatura ORDER BY temperatura.id DESC LIMIT " + col
+                cursor.execute(selectqyery)
+                rows = cursor.fetchall()
+                print(rows)
+                resultat = rows
+                print('#' * 20)
+                for row in rows:
+                    print(row)
+        finally:
+            connection.close()
+    except Exception as ex:
         print("Соединение не уставновлено")
+        print(ex)
+    print(resultat)
+    return resultat
 
 
 if __name__ == '__main__':

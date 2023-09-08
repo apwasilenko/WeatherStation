@@ -21,7 +21,13 @@ def mysql_py(col):
             # cursor = connection.cursor()
 
             with connection.cursor() as cursor:
-                selectqyery = ''
+                selectqyery = "SELECT * FROM temperatura ORDER BY temperatura.id DESC LIMIT " + col
+                cursor.execute(selectqyery)
+                rows = cursor.fetchall()
+                print(rows)
+                print('#' * 20)
+                for row in rows:
+                    print(row)
 
         finally:
             connection.close()
