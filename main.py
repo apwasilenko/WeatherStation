@@ -1,11 +1,10 @@
 #!/usr/bin/python3
-
+import math
 import sys
 import pymysql
 from config import host, user, password, database
-from datetime import datetime
-from PyQt5.QtGui import QPainter, QColor, QPen
-from PyQt5.QtCore import QRect, Qt, QSize
+from PyQt5.QtGui import QPainter, QColor, QPen, QPolygon, QFont, QFontMetrics
+from PyQt5.QtCore import QRect, Qt, QSize, QPoint
 from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QLabel, QVBoxLayout, QHBoxLayout
 
 
@@ -53,7 +52,7 @@ class MainWindow(QWidget):
     def drawWidget(self, qp):
         min_val = -50
         max_val = 50
-        cur_cal = 22.5
+        cur_val = -50
         poligon = self.drawView.geometry().getRect()
         x1, y1, x2, y2 = poligon[0], poligon[1], poligon[2], poligon[3]  # координаты области рисования
         center_x = int((x1 + x2) / 2)  # Центр сектора датчика по горизонтали
@@ -77,7 +76,37 @@ class MainWindow(QWidget):
         for i in range(0, int((max_val - min_val)/10)+1):  # рисуем метки на шкале
             myColor = QColor(0, 0, 0)
             qp.setPen(QPen(myColor, sec_thick * 1.1, cap=Qt.FlatCap))
-            qp.drawArc(center_x - radius_circle, center_y - radius_circle, radius_circle * 2, radius_circle * 2, int(3600 - i * 270 / int((max_val - min_val)/10) * 16), 2 * 16)
+            qp.drawArc(center_x - radius_circle, center_y - radius_circle, radius_circle * 2, radius_circle * 2, int(3584 - i * 270 / int((max_val - min_val)/10) * 16), 2 * 16)
+
+        for i in range(0, int((max_val - min_val)/ 10) +1):
+            myColor = QColor(0, 0, 0)
+            qp.setPen(QPen(myColor, sec_thick * 1.1, cap=Qt.FlatCap))
+            qp.setFont(QFont("Tahoma", int(radius_circle/10)))
+            #qp.boundingRect()
+
+
+            qp.drawText(int(center_x + math.cos(math.pi*3/4 + ((min_val + i*10) - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle*1.2 - int(radius_circle/10)), int(center_y + math.sin(math.pi*3/4 + ((min_val + i*10) - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle*1.2 - int(radius_circle/10)), str(min_val + i*10))
+
+
+
+        # Рисуем стрелку
+        points = QPolygon([
+            QPoint(int(center_x + math.cos(math.pi*1/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10), int(center_y + math.sin(math.pi*1/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10)),
+            QPoint(int(center_x + math.cos(math.pi*3/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle), int(center_y + math.sin(math.pi*3/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle)),
+            QPoint(int(center_x + math.cos(math.pi*5/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10), int(center_y + math.sin(math.pi*5/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10)),
+            QPoint(int(center_x + math.cos(math.pi*1/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10), int(center_y + math.sin(math.pi*1/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10)),
+        ])
+
+        qp.setBrush(QColor(255, 0, 0))
+        myColor = QColor(255, 0, 0)
+        qp.setPen(QPen(myColor, 1, cap=Qt.FlatCap))
+        qp.drawPolygon(points)
+
+        qp.setBrush(QColor(0, 0, 0))
+        myColor = QColor(0, 0, 0)
+        qp.setPen(QPen(myColor, 1, cap=Qt.FlatCap))
+        qp.drawEllipse(center_x - int(radius_circle/10), center_y - int(radius_circle/10), int(radius_circle/5), int(radius_circle/5))
+
 
 def mysql_py(col):
     resultat = 0
