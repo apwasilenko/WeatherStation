@@ -12,8 +12,8 @@ class MainWindow(QWidget):
     def __init__(self, parent=None):
         f = mysql_py("4")
         QWidget.__init__(self, parent)
-        self.setGeometry(QRect(50, 50, 320, 240))
-        self.setMinimumSize(QSize(320, 240))
+        self.setGeometry(QRect(50, 50, 320, 340))
+        self.setMinimumSize(QSize(320, 340))
         self.setWindowTitle("Погодная станция")
         self.mainBox = QVBoxLayout()
         self.headerBox = QHBoxLayout()
@@ -52,7 +52,7 @@ class MainWindow(QWidget):
     def drawWidget(self, qp):
         min_val = -50
         max_val = 50
-        cur_val = -50
+        cur_val = 22.25
         poligon = self.drawView.geometry().getRect()
         x1, y1, x2, y2 = poligon[0], poligon[1], poligon[2], poligon[3]  # координаты области рисования
         center_x = int((x1 + x2) / 2)  # Центр сектора датчика по горизонтали
@@ -82,19 +82,29 @@ class MainWindow(QWidget):
             myColor = QColor(0, 0, 0)
             qp.setPen(QPen(myColor, sec_thick * 1.1, cap=Qt.FlatCap))
             qp.setFont(QFont("Tahoma", int(radius_circle/10)))
-            #qp.boundingRect()
-
-
-            qp.drawText(int(center_x + math.cos(math.pi*3/4 + ((min_val + i*10) - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle*1.2 - int(radius_circle/10)), int(center_y + math.sin(math.pi*3/4 + ((min_val + i*10) - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle*1.2 - int(radius_circle/10)), str(min_val + i*10))
+            size_label = qp.boundingRect(QRect(), 0, str(min_val + i*10))
+            delta_x = int(size_label.width()/2)
+            delta_y = int(size_label.height()/2)
+            position_label = QPoint(int(center_x + math.cos(math.pi*3/4 + ((min_val + i*10) - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle*1.3 - delta_x),
+                        int(center_y + math.sin(math.pi*3/4 + ((min_val + i*10) - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle*1.3 + delta_y)
+                                  )
+            qp.drawText(position_label, str(min_val + i*10))
 
 
 
         # Рисуем стрелку
         points = QPolygon([
-            QPoint(int(center_x + math.cos(math.pi*1/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10), int(center_y + math.sin(math.pi*1/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10)),
-            QPoint(int(center_x + math.cos(math.pi*3/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle), int(center_y + math.sin(math.pi*3/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle)),
-            QPoint(int(center_x + math.cos(math.pi*5/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10), int(center_y + math.sin(math.pi*5/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10)),
-            QPoint(int(center_x + math.cos(math.pi*1/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10), int(center_y + math.sin(math.pi*1/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10)),
+            QPoint(int(center_x + math.cos(math.pi*1/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10),
+                   int(center_y + math.sin(math.pi*1/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10)),
+
+            QPoint(int(center_x + math.cos(math.pi*3/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle),
+                   int(center_y + math.sin(math.pi*3/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle)),
+
+            QPoint(int(center_x + math.cos(math.pi*5/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10),
+                   int(center_y + math.sin(math.pi*5/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10)),
+
+            QPoint(int(center_x + math.cos(math.pi*1/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10),
+                   int(center_y + math.sin(math.pi*1/4 + (cur_val - min_val)/(max_val-min_val)*6/4*math.pi)*radius_circle/10)),
         ])
 
         qp.setBrush(QColor(255, 0, 0))
