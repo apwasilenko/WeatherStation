@@ -115,8 +115,15 @@ class MainWindow(QWidget):
         qp.setBrush(QColor(0, 0, 0))
         myColor = QColor(0, 0, 0)
         qp.setPen(QPen(myColor, 1, cap=Qt.FlatCap))
-        qp.drawEllipse(center_x - int(radius_circle/10), center_y - int(radius_circle/10), int(radius_circle/5), int(radius_circle/5))
+        qp.drawEllipse(center_x - int(radius_circle/8), center_y - int(radius_circle/8), int(radius_circle/4), int(radius_circle/4))
 
+        myColor = QColor(0, 0, 0)
+        qp.setPen(QPen(myColor, sec_thick * 1.1, cap=Qt.FlatCap))
+        qp.setFont(QFont("Tahoma", int(radius_circle / 10)))
+        size_label = qp.boundingRect(QRect(), 0, str(cur_val))
+        delta_x = int(size_label.width() / 2)
+        position_label = QPoint(int(center_x - delta_x), int(center_y + radius_circle/2 - delta_y))
+        qp.drawText(position_label, str(cur_val))
 
 def mysql_py(col):
     resultat = 0
