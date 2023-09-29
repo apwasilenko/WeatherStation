@@ -117,6 +117,7 @@ class MainWindow(QWidget):
         qp.setPen(QPen(myColor, 1, cap=Qt.FlatCap))
         qp.drawEllipse(center_x - int(radius_circle/8), center_y - int(radius_circle/8), int(radius_circle/4), int(radius_circle/4))
 
+        #Выводим текущее значение
         myColor = QColor(0, 0, 0)
         qp.setPen(QPen(myColor, sec_thick * 1.1, cap=Qt.FlatCap))
         qp.setFont(QFont("Tahoma", int(radius_circle / 10)))
