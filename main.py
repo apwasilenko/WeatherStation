@@ -9,20 +9,21 @@ from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QLabel, QVBoxLay
 
 
 class MainWindow(QWidget):
+    f = None
+
     def __init__(self, parent=None):
-        f = mysql_py("4")
         QWidget.__init__(self, parent)
         self.setGeometry(QRect(50, 50, 320, 340))
         self.setMinimumSize(QSize(320, 340))
         self.setWindowTitle("Погодная станция")
         self.mainBox = QVBoxLayout()
         self.headerBox = QHBoxLayout()
-        cur_date_time = f[0]['mydatetime'].strftime("%H:%M   %d.%m.%Y г.")
-        print(type(f[0]))
-        print(f[0]['mydatetime'])
-        hometemp = f[0]['t_home']
+        self.f = mysql_py("1")
+        if self.f is not None:
+            self.headerLb = QLabel("Проказания датчиков по состоянию на  " + self.f[0]['mydatetime'].strftime("%H:%M   %d.%m.%Y г.") + "\n" + str(self.f[0]['t_home']))
+        else:
+            self.headerLb = QLabel("Нет данных с сервера")
 
-        self.headerLb = QLabel("Проказания датчиков по состоянию на  " + cur_date_time + "\n" + str(hometemp))
         self.headerLb.setAlignment(Qt.AlignTop)
         self.headerBox.addWidget(self.headerLb, stretch=0, alignment=Qt.AlignCenter)
         self.drawBox = QHBoxLayout()
@@ -45,16 +46,14 @@ class MainWindow(QWidget):
     def paintEvent(self, event):
         qp = QPainter()
         qp.begin(self)
-        self.drawWidget(qp)
+        poligon = self.drawView.geometry().getRect()
+        x1, y1, x2, y2 = poligon[0], poligon[1], poligon[2], poligon[3]  # координаты области рисования
+        self.drawWidget(qp, x1, y1, x2, y2, -50, 50, self.f[0]['t_home'])
         qp.end()
 
 
-    def drawWidget(self, qp):
-        min_val = -50
-        max_val = 50
-        cur_val = 22.25
-        poligon = self.drawView.geometry().getRect()
-        x1, y1, x2, y2 = poligon[0], poligon[1], poligon[2], poligon[3]  # координаты области рисования
+    def drawWidget(self, qp, x1, y1, x2, y2, min_val, max_val, cur_val):
+
         center_x = int((x1 + x2) / 2)  # Центр сектора датчика по горизонтали
         center_y = int((y1 + y2) / 2)  # Центр сектора датчика по вертикали
         if center_x > center_y:  # Определяем радиус датчик по наименьшему размеру
@@ -127,8 +126,8 @@ class MainWindow(QWidget):
         qp.drawText(position_label, str(cur_val))
 
 def mysql_py(col):
-    resultat = 0
-    print("Соединение устанавливается")
+    resultat = None
+    #print("Соединение устанавливается")
     try:
         connection = pymysql.connect(
             host=host,
@@ -138,21 +137,20 @@ def mysql_py(col):
             database=database,
             cursorclass=pymysql.cursors.DictCursor,
         )
-        print("Соединение установлено")
-        print('-' * 20, '#' * 20, '-' * 20)
+        # print("Соединение установлено")
+        # print('-' * 20, '#' * 20, '-' * 20)
 
         try:
-            # cursor = connection.cursor()
-
             with connection.cursor() as cursor:
-                selectqyery = "SELECT * FROM temperatura ORDER BY temperatura.id DESC LIMIT " + col
+                selectqyery = "SELECT * FROM temperatura ORDER BY temperatura.id DESC LIMIT " + str(col)
                 cursor.execute(selectqyery)
                 rows = cursor.fetchall()
-                print(rows)
+
+                #print(rows)
                 resultat = rows
-                print('#' * 20)
-                for row in rows:
-                    print(row)
+                #print('#' * 20)
+                #for row in rows:
+                #    print(row)
         finally:
             connection.close()
     except Exception as ex:
