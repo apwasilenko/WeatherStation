@@ -3,7 +3,7 @@ import math
 import sys
 import pymysql
 from config import host, user, password, database
-from PyQt5.QtGui import QPainter, QColor, QPen, QPolygon, QFont, QFontMetrics
+from PyQt5.QtGui import QPainter, QColor, QPen, QPolygon, QFont
 from PyQt5.QtCore import QRect, Qt, QSize, QPoint
 from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QLabel, QVBoxLayout, QHBoxLayout
 
@@ -20,7 +20,9 @@ class MainWindow(QWidget):
         self.headerBox = QHBoxLayout()
         self.f = mysql_py("1")
         if self.f is not None:
-            self.headerLb = QLabel("Проказания датчиков по состоянию на  " + self.f[0]['mydatetime'].strftime("%H:%M   %d.%m.%Y г.") + "\n" + str(self.f[0]['t_home']))
+            self.headerLb = QLabel("Проказания датчиков по состоянию на  " +
+                                   self.f[0]['mydatetime'].strftime("%H:%M   %d.%m.%Y г.") +
+                                   "\n" + str(self.f[0]['t_home']))
         else:
             self.headerLb = QLabel("Нет данных с сервера")
 
