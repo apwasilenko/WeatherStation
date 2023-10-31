@@ -19,7 +19,7 @@ class MainWindow(QWidget):
         self.setWindowTitle("Погодная станция")
         self.mainBox = QVBoxLayout()
         self.headerBox = QHBoxLayout()
-        self.f = mysql_py('1000')
+        self.f = mysql_py('10')
         if self.f is not None:
             self.headerLb = QLabel("Показания датчиков по состоянию на  " +
                                    self.f[0]['mydatetime'].strftime("%H:%M   %d.%m.%Y г."))
