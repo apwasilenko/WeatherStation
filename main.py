@@ -12,17 +12,17 @@ class MainWindow(QWidget):
     f = None
 
     def __init__(self, parent=None):
+        """Инициализация макета окна"""
         QWidget.__init__(self, parent)
-        self.setGeometry(QRect(50, 50, 320, 340))
+        self.setGeometry(QRect(50, 50, 400, 300))
         self.setMinimumSize(QSize(320, 340))
         self.setWindowTitle("Погодная станция")
         self.mainBox = QVBoxLayout()
         self.headerBox = QHBoxLayout()
-        self.f = mysql_py("1")
+        self.f = self.mysql_py('1')
         if self.f is not None:
-            self.headerLb = QLabel("Проказания датчиков по состоянию на  " +
-                                   self.f[0]['mydatetime'].strftime("%H:%M   %d.%m.%Y г.") +
-                                   "\n" + str(self.f[0]['t_home']))
+            self.headerLb = QLabel("Показания датчиков по состоянию на  " +
+                                   self.f[0]['mydatetime'].strftime("%H:%M   %d.%m.%Y г."))
         else:
             self.headerLb = QLabel("Нет данных с сервера")
 
@@ -42,22 +42,23 @@ class MainWindow(QWidget):
         self.setLayout(self.mainBox)
 
     def drawupdate(self):
+        """Функция обновления данных"""
         print("Обновление")
 
 
     def paintEvent(self, event):
+        """Переопределение функции отрисовки"""
         qp = QPainter()
         qp.begin(self)
         poligon = self.drawView.geometry().getRect()
-        x1, y1, x2, y2 = poligon[0], poligon[1], poligon[2], poligon[3]  # координаты области рисования
-        self.drawWidget(qp, x1, y1, x2, y2, -50, 50, self.f[0]['t_home'])
+        self.drawWidget(qp, poligon, -50, 50, self.f[0]['t_home'])
         qp.end()
 
 
-    def drawWidget(self, qp, x1, y1, x2, y2, min_val, max_val, cur_val):
-
-        center_x = int((x1 + x2) / 2)  # Центр сектора датчика по горизонтали
-        center_y = int((y1 + y2) / 2)  # Центр сектора датчика по вертикали
+    def drawWidget(self, qp, poligon, min_val, max_val, cur_val):
+        x1, y1, x2, y2 = poligon[0], poligon[1], poligon[2], poligon[3]  # координаты области рисования
+        center_x = int(x1 + x2 / 2)  # Центр сектора датчика по горизонтали
+        center_y = int(y1 + y2 / 2)  # Центр сектора датчика по вертикали
         if center_x > center_y:  # Определяем радиус датчик по наименьшему размеру
             radius_circle = int(center_y * 0.6)
         else:
@@ -145,39 +146,40 @@ class MainWindow(QWidget):
         position_signature = QPoint(int(center_x - delta_x), int(center_y + radius_circle/2 - delta_y))
         qp.drawText(position_signature, str(cur_val))
 
-def mysql_py(col):
-    resultat = None
-    #print("Соединение устанавливается")
-    try:
-        connection = pymysql.connect(
-            host=host,
-            port=3306,
-            user=user,
-            password=password,
-            database=database,
-            cursorclass=pymysql.cursors.DictCursor,
-        )
-        # print("Соединение установлено")
-        # print('-' * 20, '#' * 20, '-' * 20)
 
+    def mysql_py(self, col):
+        resultat = None
+        #print("Соединение устанавливается")
         try:
-            with connection.cursor() as cursor:
-                selectqyery = "SELECT * FROM temperatura ORDER BY temperatura.id DESC LIMIT " + str(col)
-                cursor.execute(selectqyery)
-                rows = cursor.fetchall()
+            connection = pymysql.connect(
+                host=host,
+                port=3306,
+                user=user,
+                password=password,
+                database=database,
+                cursorclass=pymysql.cursors.DictCursor,
+            )
+            # print("Соединение установлено")
+            # print('-' * 20, '#' * 20, '-' * 20)
 
-                #print(rows)
-                resultat = rows
-                #print('#' * 20)
-                #for row in rows:
-                #    print(row)
-        finally:
-            connection.close()
-    except Exception as ex:
-        print("Соединение не уставновлено")
-        print(ex)
-    print(resultat)
-    return resultat
+            try:
+                with connection.cursor() as cursor:
+                    selectqyery = "SELECT * FROM temperatura ORDER BY temperatura.id DESC LIMIT " + str(col)
+                    cursor.execute(selectqyery)
+                    rows = cursor.fetchall()
+
+                    #print(rows)
+                    resultat = rows
+                    #print('#' * 20)
+                    #for row in rows:
+                    #    print(row)
+            finally:
+                connection.close()
+        except Exception as ex:
+            print("Соединение не уставновлено")
+            print(ex)
+        print(resultat)
+        return resultat
 
 
 if __name__ == '__main__':
