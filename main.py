@@ -3,13 +3,20 @@ import math
 import sys
 from drawWidget import myDrawWidget
 from config import mysql_py
-from PyQt5.QtGui import QPainter, QColor, QPen, QPolygon, QFont
+from PyQt5.QtGui import QPainter
 from PyQt5.QtCore import QRect, Qt, QSize, QPoint
-from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QLabel, QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QComboBox
 
 
 class MainWindow(QWidget):
     f = None
+
+    bd = {
+        'posSensor': 't_home',
+        'typeGrapch': 'sensor',
+        'dateBD': mysql_py('1'),
+    }
+
 
     def __init__(self, parent=None):
         """Инициализация макета окна"""
@@ -19,7 +26,7 @@ class MainWindow(QWidget):
         self.setWindowTitle("Погодная станция")
         self.mainBox = QVBoxLayout()
         self.headerBox = QHBoxLayout()
-        self.f = mysql_py('10')
+        self.f = mysql_py('1')
         if self.f is not None:
             self.headerLb = QLabel("Показания датчиков по состоянию на  " +
                                    self.f[0]['mydatetime'].strftime("%H:%M   %d.%m.%Y г."))
@@ -34,6 +41,17 @@ class MainWindow(QWidget):
         self.elem = QHBoxLayout()
         self.btUpdate = QPushButton("Обновить")
         self.btUpdate.clicked.connect(self.drawupdate)
+        self.cbComboGrapch = QComboBox()
+        self.cbComboGrapch.addItem('Дом', 't_home')
+        self.cbComboGrapch.addItem('Улица', 't_street')
+        self.cbComboGrapch.addItem('Котел', 't_boller')
+        self.elem.addWidget(self.cbComboGrapch)
+        self.cbGrapchType = QComboBox()
+        self.cbGrapchType.addItem('Датчик', 'sensor')
+        self.cbGrapchType.addItem('График', 'chart')
+        self.elem.addWidget(self.cbGrapchType)
+
+
         self.elem.addWidget(self.btUpdate)
         self.elem.setAlignment(Qt.AlignRight)
         self.mainBox.addLayout(self.headerBox, stretch=1)
@@ -48,16 +66,14 @@ class MainWindow(QWidget):
 
     def paintEvent(self, event):
         """Переопределение функции отрисовки"""
+        self.bd['posSensor'] = self.cbComboGrapch.currentData()
+        self.bd['typeGrapch'] = self.cbGrapchType.currentData()
+        print(self.cbGrapchType.currentData())
         qp = QPainter()
         qp.begin(self)
         poligon = self.drawView.geometry().getRect()
-        self.drawWidget(qp, poligon, -50, 50, self.f[0]['t_home'])
+        myDrawWidget(qp, poligon, self.bd)
         qp.end()
-
-
-    def drawWidget(self, qp, poligon, min_val, max_val, cur_val):
-        """Функция отрицовки """
-        myDrawWidget(qp, poligon, min_val, max_val, cur_val)
 
 
 if __name__ == '__main__':
