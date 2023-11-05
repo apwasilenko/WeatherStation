@@ -11,12 +11,17 @@ from PyQt5.QtWidgets import QWidget, QApplication, QPushButton, QLabel, QVBoxLay
 class MainWindow(QWidget):
     f = None
 
-    bd = {
+    bd = {  # Настройки программы
         'posSensor': 't_home',
         'typeGrapch': 'sensor',
         'dateBD': mysql_py('1'),
     }
 
+    oldbd = {  # Старые настройки программы
+        'posSensor': 't_home',
+        'typeGrapch': 'sensor',
+        'dateBD': mysql_py('1'),
+    }
 
     def __init__(self, parent=None):
         """Инициализация макета окна"""
@@ -51,7 +56,6 @@ class MainWindow(QWidget):
         self.cbGrapchType.addItem('График', 'chart')
         self.elem.addWidget(self.cbGrapchType)
 
-
         self.elem.addWidget(self.btUpdate)
         self.elem.setAlignment(Qt.AlignRight)
         self.mainBox.addLayout(self.headerBox, stretch=1)
@@ -63,7 +67,6 @@ class MainWindow(QWidget):
         """Функция обновления данных"""
         print("Обновление")
 
-
     def paintEvent(self, event):
         """Переопределение функции отрисовки"""
         self.bd['posSensor'] = self.cbComboGrapch.currentData()
@@ -73,6 +76,9 @@ class MainWindow(QWidget):
         qp.begin(self)
         poligon = self.drawView.geometry().getRect()
         myDrawWidget(qp, poligon, self.bd)
+        if self.oldbd != self.bd:
+            self.drawView.update()
+            self.oldbd = self.bd
         qp.end()
 
 
