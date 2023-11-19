@@ -11,14 +11,6 @@ def myDrawWidget(qp, poligon, bd):
         drawChart(qp, poligon, bd)
 
 
-def drawChart(qp: QPainter, poligon : QRect, bd):
-    x1, y1, x2, y2 = poligon[0], poligon[1], poligon[2], poligon[3]
-    myColor = QColor(0, 0, 255)
-    qp.setPen(QPen(myColor, 3, cap=Qt.FlatCap))
-    qp.setBrush(myColor)
-    qp.drawRect(x1, y1, x2, y2)
-
-
 def drawSensor(qp: QPainter, poligon : QRect, bd):
     """Функция отрисовывает датчик температуры"""
     if bd['posSensor'] == 't_home':
@@ -145,3 +137,22 @@ def drawSensor(qp: QPainter, poligon : QRect, bd):
     position_signature = QPoint(int(center_x - delta_x), int(center_y + radius_circle / 2 - delta_y))
     qp.drawText(position_signature, str(cur_val))
 
+
+def drawChart(qp: QPainter, poligon : QRect, bd):
+    x1, y1, x2, y2 = poligon[0], poligon[1], poligon[2], poligon[3]
+    myColor = QColor(225, 225, 225)
+    qp.setPen(QPen(myColor, 1, cap=Qt.FlatCap))
+    qp.setBrush(myColor)
+    qp.drawRect(x1, y1, x2, y2)
+    qp.setFont(QFont("Tahoma", int(y2 / 20)))
+    size_signature = qp.boundingRect(QRect(), 0, str('-50'))
+    delta_x = int(size_signature.width())
+    delta_y = int(size_signature.height())
+    myColor = QColor(0, 0, 0)
+    qp.setPen(QPen(myColor, 3, cap=Qt.FlatCap))
+    qp.drawLine(int(x1 + delta_x * 1.75), y1 + y2 - delta_y*2, x2 + x1, y1 + y2 - delta_y*2)
+    position_signature = QPoint(int(x1 + delta_x/2), int(y1 + y2 - delta_y * 1.75))
+    qp.drawText(position_signature, str('-50'))
+
+    position_signature = QPoint(int(x1 + delta_x), int(y1 + y2 - delta_y*1.25))
+    qp.drawText(position_signature, str('07.11\n2023'))

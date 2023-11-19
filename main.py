@@ -71,14 +71,15 @@ class MainWindow(QWidget):
         """Переопределение функции отрисовки"""
         self.bd['posSensor'] = self.cbComboGrapch.currentData()
         self.bd['typeGrapch'] = self.cbGrapchType.currentData()
-        print(self.cbGrapchType.currentData())
         qp = QPainter()
         qp.begin(self)
         poligon = self.drawView.geometry().getRect()
         myDrawWidget(qp, poligon, self.bd)
         if self.oldbd != self.bd:
-            self.drawView.update()
-            self.oldbd = self.bd
+            self.drawView.setVisible(False)
+            self.drawView.setVisible(True)
+            self.oldbd['posSensor'] = self.bd['posSensor']
+            self.oldbd['typeGrapch'] = self.bd['typeGrapch']
         qp.end()
 
 
