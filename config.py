@@ -10,7 +10,7 @@ database="f0659051_apwasilenko"
 myRezault = None
 
 
-def mysql_py(col):
+def mysql_py(col : int):
 
     try:
         connection = pymysql.connect(
@@ -33,6 +33,5 @@ def mysql_py(col):
         print("Соединение не уставновлено")
         print(ex)
         myRezault = dateNoConnect
-    print(myRezault)
     return myRezault
 

@@ -25,8 +25,6 @@ def drawSensor(qp: QPainter, poligon : QRect, bd):
         min_val = 0
         max_val = 100
         cur_val = bd['dateBD'][0]['t_boller']
-
-
     x1, y1, x2, y2 = poligon[0], poligon[1], poligon[2], poligon[3]  # координаты области рисования
     center_x = int(x1 + x2 / 2)  # Центр сектора датчика по горизонтали
     center_y = int(y1 + y2 / 2)  # Центр сектора датчика по вертикали
@@ -35,7 +33,6 @@ def drawSensor(qp: QPainter, poligon : QRect, bd):
     else:
         radius_circle = int(center_x * 0.6)
     sec_thick = int(radius_circle / 5)  # Толщина сектора
-
     # Рисуем шкалу датчика
     for i in range(0, 255):  # переход света от синего к зеленому
         myColor = QColor(0, i, 255 - i)
@@ -47,7 +44,6 @@ def drawSensor(qp: QPainter, poligon : QRect, bd):
         qp.setPen(QPen(myColor, sec_thick, cap=Qt.FlatCap))
         qp.drawArc(center_x - radius_circle, center_y - radius_circle, radius_circle * 2, radius_circle * 2,
                    int(1440 - i * 135 / 255 * 16), int(135 / 255 + 1) * 16)
-
     for i in range(min_val, max_val):  # Выводим подписи
         if (i % 5 == 0) or (i % 10 == 0) or (i == min_val) or (i == max_val):
             myColor = QColor(0, 0, 0)
@@ -92,41 +88,34 @@ def drawSensor(qp: QPainter, poligon : QRect, bd):
                                              max_val - min_val) * 6 / 4 * math.pi) * radius_circle * 0.9)
                                      )
             qp.drawLine(position1_label, position2_label)
-
     # Рисуем стрелку
     points = QPolygon([
         QPoint(int(center_x + math.cos(
             math.pi * 1 / 4 + (cur_val - min_val) / (max_val - min_val) * 6 / 4 * math.pi) * radius_circle / 10),
                int(center_y + math.sin(math.pi * 1 / 4 + (cur_val - min_val) / (
                        max_val - min_val) * 6 / 4 * math.pi) * radius_circle / 10)),
-
         QPoint(int(center_x + math.cos(
             math.pi * 3 / 4 + (cur_val - min_val) / (max_val - min_val) * 6 / 4 * math.pi) * radius_circle),
                int(center_y + math.sin(
                    math.pi * 3 / 4 + (cur_val - min_val) / (max_val - min_val) * 6 / 4 * math.pi) * radius_circle)),
-
         QPoint(int(center_x + math.cos(
             math.pi * 5 / 4 + (cur_val - min_val) / (max_val - min_val) * 6 / 4 * math.pi) * radius_circle / 10),
                int(center_y + math.sin(math.pi * 5 / 4 + (cur_val - min_val) / (
                        max_val - min_val) * 6 / 4 * math.pi) * radius_circle / 10)),
-
         QPoint(int(center_x + math.cos(
             math.pi * 1 / 4 + (cur_val - min_val) / (max_val - min_val) * 6 / 4 * math.pi) * radius_circle / 10),
                int(center_y + math.sin(math.pi * 1 / 4 + (cur_val - min_val) / (
                        max_val - min_val) * 6 / 4 * math.pi) * radius_circle / 10)),
     ])
-
     qp.setBrush(QColor(255, 0, 0))
     myColor = QColor(255, 0, 0)
     qp.setPen(QPen(myColor, 1, cap=Qt.FlatCap))
     qp.drawPolygon(points)
-
     qp.setBrush(QColor(0, 0, 0))
     myColor = QColor(0, 0, 0)
     qp.setPen(QPen(myColor, 1, cap=Qt.FlatCap))
     qp.drawEllipse(center_x - int(radius_circle / 8), center_y - int(radius_circle / 8), int(radius_circle / 4),
                    int(radius_circle / 4))
-
     # Выводим текущее значение
     myColor = QColor(0, 0, 0)
     qp.setPen(QPen(myColor, sec_thick * 1.1, cap=Qt.FlatCap))
@@ -144,7 +133,7 @@ def drawChart(qp: QPainter, poligon : QRect, bd):
     qp.setPen(QPen(myColor, 1, cap=Qt.FlatCap))
     qp.setBrush(myColor)
     qp.drawRect(x1, y1, x2, y2)
-    qp.setFont(QFont("Tahoma", int(y2 / 20)))
+    qp.setFont(QFont("Tahoma", int(y2 / 30)))
     size_signature = qp.boundingRect(QRect(), 0, str('-50'))
     delta_x = int(size_signature.width())
     delta_y = int(size_signature.height())
@@ -153,6 +142,8 @@ def drawChart(qp: QPainter, poligon : QRect, bd):
     qp.drawLine(int(x1 + delta_x * 1.75), y1 + y2 - delta_y*2, x2 + x1, y1 + y2 - delta_y*2)
     position_signature = QPoint(int(x1 + delta_x/2), int(y1 + y2 - delta_y * 1.75))
     qp.drawText(position_signature, str('-50'))
-
-    position_signature = QPoint(int(x1 + delta_x), int(y1 + y2 - delta_y*1.25))
-    qp.drawText(position_signature, str('07.11\n2023'))
+    size_signature = qp.boundingRect(QRect(), 0, str(bd['dateBD'][0]['mydatetime'].strftime("%H:%M")))
+    delta_x = int(size_signature.width())
+    delta_y = int(size_signature.height())
+    position_signature = QPoint(int(x1 + delta_x/2), int(y1 + y2 - delta_y))
+    qp.drawText(position_signature, str(bd['dateBD'][0]['mydatetime'].strftime("%H:%M")))

@@ -13,14 +13,14 @@ class MainWindow(QWidget):
 
     bd = {  # Настройки программы
         'posSensor': 't_home',
-        'typeGrapch': 'sensor',
-        'dateBD': mysql_py('1'),
+        'typeGraph': 'sensor',
+        'dateBD': mysql_py('30'),
     }
 
     oldbd = {  # Старые настройки программы
-        'posSensor': 't_home',
-        'typeGrapch': 'sensor',
-        'dateBD': mysql_py('1'),
+        'posSensor': '',
+        'typeGrapch': '',
+        'dateBD': None,
     }
 
     def __init__(self, parent=None):
@@ -31,10 +31,9 @@ class MainWindow(QWidget):
         self.setWindowTitle("Погодная станция")
         self.mainBox = QVBoxLayout()
         self.headerBox = QHBoxLayout()
-        self.f = mysql_py('1')
-        if self.f is not None:
-            self.headerLb = QLabel("Показания датчиков по состоянию на  " +
-                                   self.f[0]['mydatetime'].strftime("%H:%M   %d.%m.%Y г."))
+        if self.bd['dateBD'][0] is not None:
+            self.headerLb = QLabel("Показания датчиков по состоянию на " +
+                                   self.bd['dateBD'][0]['mydatetime'].strftime("%H:%M %d.%m.%Yг."))
         else:
             self.headerLb = QLabel("Нет данных с сервера")
 
@@ -75,11 +74,11 @@ class MainWindow(QWidget):
         qp.begin(self)
         poligon = self.drawView.geometry().getRect()
         myDrawWidget(qp, poligon, self.bd)
-        if self.oldbd != self.bd:
+        if  self.oldbd['posSensor'] != self.bd['posSensor'] or self.oldbd['typeGrapch'] != self.bd['typeGrapch']:
+            self.oldbd['typeGrapch'] = self.bd['typeGrapch']
+            self.oldbd['posSensor'] = self.bd['posSensor']
             self.drawView.setVisible(False)
             self.drawView.setVisible(True)
-            self.oldbd['posSensor'] = self.bd['posSensor']
-            self.oldbd['typeGrapch'] = self.bd['typeGrapch']
         qp.end()
 
 
