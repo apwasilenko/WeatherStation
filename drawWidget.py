@@ -14,16 +14,16 @@ def myDrawWidget(qp, poligon, bd):
 def drawSensor(qp: QPainter, poligon : QRect, bd):
     """Функция отрисовывает датчик температуры"""
     if bd['posSensor'] == 't_home':
-        min_val = 16
-        max_val = 32
+        min_val = -50
+        max_val = 50
         cur_val = bd['dateBD'][0]['t_home']
     if bd['posSensor'] == 't_street':
         min_val = -50
         max_val = 50
         cur_val = bd['dateBD'][0]['t_street']
     if bd['posSensor'] == 't_boller':
-        min_val = 0
-        max_val = 100
+        min_val = 16
+        max_val = 32
         cur_val = bd['dateBD'][0]['t_boller']
     x1, y1, x2, y2 = poligon[0], poligon[1], poligon[2], poligon[3]  # координаты области рисования
     center_x = int(x1 + x2 / 2)  # Центр сектора датчика по горизонтали
